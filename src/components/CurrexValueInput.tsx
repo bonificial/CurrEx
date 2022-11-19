@@ -5,7 +5,6 @@ import { randomString } from "../utils/contants";
 type listOptions = {
   itemLabel: string;
   itemValue: string;
-  default?: boolean;
 };
 
 interface CurrexValueInputProps {
@@ -15,7 +14,7 @@ interface CurrexValueInputProps {
   label: string;
   disabled?: boolean;
   mode?: "Select" | "Input";
-  defaultValue?: listOptions;
+  defaultValue?: string;
   dataset?: Array<listOptions>;
   value?: string ;
 
@@ -35,7 +34,6 @@ function CurrexValueInput({
   placeholder,
 }: CurrexValueInputProps) {
   const { Option } = Select;
-
   return (
     <>
       <label
@@ -46,7 +44,7 @@ function CurrexValueInput({
       </label>
       {mode == "Select" ? (
         <Select
-          defaultValue={defaultValue?.itemValue}
+          defaultValue={defaultValue}
           disabled={disabled}
           style={{ width: "100%" }}
           showSearch
