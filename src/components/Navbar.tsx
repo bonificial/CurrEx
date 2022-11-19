@@ -9,7 +9,7 @@ export default function CurrExNavbar() {
       <div className="sticky top-0 justify-between px-4 mx-auto  container md:items-center md:flex md:px-8">
         <div>
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
-            <a href="#">
+            <a href="/">
               <img
                 src={Logo}
                 style={{ height: "40px" }}
