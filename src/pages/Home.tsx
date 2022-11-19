@@ -31,12 +31,13 @@ function Home(props: AppProps) {
             }
 
         })()
-    }, []);
+    }, [baseCurrency]);
  
     return (
     <div>
       <CurrExNavbar />
-      <ConverterPanel currencies={currencies} />
+
+      <ConverterPanel currencies={currencies } currentRoute={'/'}/>
     </div>
   );
 }
