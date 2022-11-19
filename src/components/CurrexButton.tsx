@@ -5,13 +5,15 @@ interface CurrexButtonProps {
   label: string;
   disabled?: boolean;
   icon?: ReactElement;
-  style?:object
+  style?:object;
+  onClickHandler:()=>void
 }
 
-function CurrexButton({ disabled,style, label, icon }: CurrexButtonProps) {
+function CurrexButton({onClickHandler, disabled,style, label, icon }: CurrexButtonProps) {
   return (
     <>
       <Button
+          onClick={onClickHandler}
         size={"large"}
         disabled={disabled}
         type="primary"
