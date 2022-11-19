@@ -196,3 +196,9 @@ export const sampleRatesResponse = {
     ZWL: 333.124586,
   },
 };
+
+export   type currencyOptionFormat = {
+  itemLabel: string;
+  itemValue: string;
+};
+export const topPopularCurrencies = ['USD','EUR','GBP','AUD','JPY','CHF','CAD','NZD','KES','CNY','HKD'];
