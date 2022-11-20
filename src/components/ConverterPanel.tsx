@@ -8,10 +8,20 @@ import currencyContext from "../context/CurrencyContext";
 import { currencyOptionFormat, topPopularCurrencies } from "../utils/contants";
 import { notification } from "antd";
 import ConversionCard from "./ConversionCard";
+import { useNavigate } from "react-router-dom";
+import Plotter from "./Plotter";
+
+type pageParamsType = {
+  base?: string;
+  symbolFullName?: string;
+  dest?: string;
+  amount?: number;
+};
 
 interface ConverterProps {
   currencies: Array<{}>;
-  currentRoute?: string
+  currentRoute?: string;
+  pageParams?: pageParamsType;
 }
 
 type topConversion = {
@@ -19,64 +29,100 @@ type topConversion = {
   amount: number;
 };
 
-function ConverterPanel({ currencies,currentRoute  }: ConverterProps) {
+function ConverterPanel({
+  currencies,
+  currentRoute,
+  pageParams,
+}: ConverterProps) {
   const { baseCurrency, setBaseCurrency } = useContext(currencyContext);
-  const [currentToCurrency, setCurrentToCurrency] = useState<string>("USD");
-  const [conversionAmount, setConversionAmount] = useState<number>(0);
+  const [currentToCurrency, setCurrentToCurrency] = useState<string>(
+    pageParams?.dest || "USD"
+  );
+  const [conversionAmount, setConversionAmount] = useState<number>(
+    pageParams?.amount || 0
+  );
   const [currentExchangeRate, setCurrentExchangeRate] = useState<number>(0);
   const [totalConvertedValue, setTotalConvertedValue] = useState<number>(0);
   const [topConversions, setTopConversions] = useState<Array<topConversion>>(
     []
   );
+  const navigate = useNavigate();
+/*  useEffect(() => {
+    if (pageParams?.base) {
+      setBaseCurrency(pageParams?.base);
+    }
+  }, [pageParams]);*/
+
+  useEffect(() => {
+    if (!conversionAmount || !currencies || !totalConvertedValue || minified)
+      return; //totalConvertedValue here makes sure that the top 9 currencies wont autocalculate on page load
+    calculateTopNineConversions();
+  }, [baseCurrency, currencies]);
+  useEffect(() => {
+    if (!currencies) return;
+    console.log(currencies);
+    let exchangeRate =
+      Object.values(currencies)[
+        Object.keys(currencies).indexOf(currentToCurrency)
+      ];
+    setCurrentExchangeRate(parseFloat(`${exchangeRate}`));
+  }, [conversionAmount, currencies, currentToCurrency, baseCurrency]);
+
+  useEffect(() => {
+    if(minified){
+      navigate(`/details/${baseCurrency}/${currentToCurrency}/${conversionAmount}`)
+    }
+  }, [baseCurrency,currentToCurrency]);
 
 
-  let minified = currentRoute !== '/';
+  let minified = currentRoute !== "/";
   // console.log(currencies);
-  console.log(currentRoute,minified);
+  console.log(currentRoute, minified, baseCurrency, currentToCurrency);
   const calculateTotalConverted = () => {
     let total = conversionAmount * currentExchangeRate;
     setTotalConvertedValue(total);
-    calculateTopNineConversions();
-
+    if (!minified) calculateTopNineConversions();
   };
-  const calculateTopNineConversions = ()=>{
+  const calculateTopNineConversions = () => {
     //console.log(baseCurrency,currentToCurrency)
     let topExchangeValues: Array<topConversion> = [];
     topPopularCurrencies
-        .filter((curr) => curr != (currentToCurrency && curr != baseCurrency))
-        .map((currency) => {
-          let exRate = parseFloat(
-              `${
-                  Object.values(currencies)[Object.keys(currencies).indexOf(currency)]
-              }`
-          );
-          topExchangeValues.push({
-            currency: currency,
-            amount: exRate * conversionAmount,
-          });
-
+      .filter((curr) => curr != (currentToCurrency && curr != baseCurrency))
+      .map((currency) => {
+        let exRate = parseFloat(
+          `${
+            Object.values(currencies)[Object.keys(currencies).indexOf(currency)]
+          }`
+        );
+        //  console.log( exRate , conversionAmount)
+        topExchangeValues.push({
+          currency: currency,
+          amount: exRate * conversionAmount,
         });
+      });
     console.log(topExchangeValues);
     setTopConversions(topExchangeValues);
-  }
+  };
 
   const swapCurrencies = () => {
     //Swap the Base and Destination Currencies
+    console.log(baseCurrency, currentToCurrency,pageParams);
     let destCurrency = currentToCurrency;
     let fromCurrency = baseCurrency;
-    setCurrentToCurrency(fromCurrency);
+    console.log("swapn", fromCurrency, destCurrency);
+
+    console.log('setting base currency to ', destCurrency)
     setBaseCurrency(destCurrency);
+    console.log('setting dest currency to ', fromCurrency)
+    setCurrentToCurrency(fromCurrency);
+
+
     notification.info({
       message: "Swapped",
       description: ` Currencies swapped. Now Exchanging ${currentToCurrency} to ${baseCurrency}`,
     });
-
+   // navigate(`/details/${destCurrency}/${destCurrency}/${conversionAmount}`)
   };
-
-  useEffect(()=>{
-    if(!conversionAmount) return;
-    calculateTopNineConversions();
-  },[baseCurrency])
 
   const onChangeEitherCurrency = (newValue: string, relation: string) => {
     if (newValue !== baseCurrency && relation == "from") {
@@ -102,26 +148,29 @@ function ConverterPanel({ currencies,currentRoute  }: ConverterProps) {
     return newValue;
   };
 
-  useEffect(() => {
-    if (!currencies) return;
-    let exchangeRate =
-      Object.values(currencies)[
-        Object.keys(currencies).indexOf(currentToCurrency)
-      ];
-    setCurrentExchangeRate(parseFloat(`${exchangeRate}`));
-
-
-  }, [conversionAmount, currencies, currentToCurrency, baseCurrency]);
-
   return (
     <div className="bg-gray-600 hover:bg-gray-700 p-10">
-      <div className={" container p-2 border-2 border-slate-400   mx-auto   "}>
-        <div className="flex justify-between px-12">
-          <p className={'text-xl py-4 text-white'}>{minified ?  baseCurrency : "Currency Exchanger" }</p>
-          {minified && <a className={'p-2 px-12 rounded bg-blue-500 hover:bg-blue-400 text-white flex items-center'} href={'/'}>Back to Home</a> }
+      <div className={" container p-2 border-2 border-slate-400   mx-auto"}>
+        <div className=" sticky top-0 bg-gray-600 hover:bg-gray-700 z-50 ">
+        <div className="   flex justify-between px-12">
+          <p className={"text-2xl font-bold py-4 text-white"}>
+            {minified
+              ? `${baseCurrency} - ${pageParams?.symbolFullName}`
+              : "Currency Exchanger"}
+          </p>
+          {minified && (
+            <a
+              className={
+                "p-2 px-12 rounded bg-blue-500 hover:bg-blue-400 text-white flex items-center"
+              }
+              href={"/"}
+            >
+              Back to Home
+            </a>
+          )}
         </div>
 
-        <div className="grid grid-rows-2 grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <div className="  sticky top-0 grid grid-rows-2 grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           <div className={"col-span-2 md:col-span-1"}>
             <CurrexValueInput
               label={"Amount"}
@@ -219,11 +268,18 @@ function ConverterPanel({ currencies,currentRoute  }: ConverterProps) {
             </p>
           </div>
           <div className={"col-span-2 md:col-span-1"}>
-            <ConversionCard textToDisplay={totalConvertedValue.toFixed(2) + " "+ currentToCurrency} />
+            <ConversionCard
+              textToDisplay={
+                totalConvertedValue.toFixed(2) + " " + currentToCurrency
+              }
+            />
           </div>
-          <div className={"col-span-2 md:col-span-1"} style={{display:minified ? 'none' : 'block'}}>
+          <div
+            className={"col-span-2 md:col-span-1"}
+            style={{ display: minified ? "none" : "block" }}
+          >
             <a
-                href={`/details/${baseCurrency}/${currentToCurrency}/${conversionAmount}`}
+              href={`/details/${baseCurrency}/${currentToCurrency}/${conversionAmount}`}
               className={
                 "p-2 px-12 rounded bg-blue-500 hover:bg-blue-400 text-white"
               }
@@ -232,26 +288,30 @@ function ConverterPanel({ currencies,currentRoute  }: ConverterProps) {
             </a>
           </div>
         </div>
-        <div className="border-2 border-slate-400 p-12">
-          <div className="grid gap-4 grid-rows-3 grid-cols-3">
+        </div>
+        <div className="border-2 border-slate-400 p-12 z-10">
+          {!minified ? <div className="grid gap-4 grid-rows-3 grid-cols-3">
             {topConversions
               .filter(
                 (cnv) =>
                   cnv.currency !== baseCurrency &&
                   cnv.currency !== currentToCurrency
               )
-              .map((cnv,index) => {
-               if(index < 9){
-                 return (
-                     <div className={"col-span-1"}>
-                       <ConversionCard
-                           textToDisplay={(cnv.amount.toFixed(2) + " " + cnv.currency)}
-                       />
-                     </div>
-                 );
-               }
+              .map((cnv, index) => {
+                if (index < 9) {
+                  return (
+                    <div className={"col-span-1"}>
+                      <ConversionCard
+                        textToDisplay={
+                          cnv.amount.toFixed(2) + " " + cnv.currency
+                        }
+                      />
+                    </div>
+                  );
+                }
               })}
-          </div>
+          </div> :
+              <Plotter dest={pageParams?.dest} base={pageParams?.base}/> }
         </div>
       </div>
     </div>
