@@ -5,8 +5,8 @@ import { FaBars, FaTimes } from "react-icons/fa";
 export default function CurrExNavbar() {
   const [navbar, setNavbar] = useState(false);
   return (
-    <nav className="w-full bg-slate-800 shadow s"  >
-      <div className="sticky top-0 justify-between px-4 mx-auto  container md:items-center md:flex md:px-8">
+    <nav className="sticky top-0 w-full bg-slate-800 shadow z-50"  >
+      <div className=" justify-between px-4 mx-auto  container md:items-center md:flex md:px-8">
         <div>
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
             <a href="/">
@@ -39,10 +39,10 @@ export default function CurrExNavbar() {
           >
             <ul className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0">
               <li className="text-white hover:text-indigo-200">
-                <a href="#">EUR-USD</a>
+                <a href="/details/EUR/USD/1">EUR-USD</a>
               </li>
               <li className="text-white hover:text-indigo-200">
-                <a href="#">EUR-GBP</a>
+                <a href="/details/EUR/GBP/1">EUR-GBP</a>
               </li>
             </ul>
           </div>
