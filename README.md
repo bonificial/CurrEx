@@ -2,9 +2,13 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## REMEMBER - YOU MUST CREATE A .ENV FILE AT THE ROOT
 
-In the project directory, you can run:
+Add the following in the .env file
+
+REACT_APP_FIXER_API_KEY=###
+
+Replace ### Above with a valid fixer api key
 
 ### `npm start`
 
