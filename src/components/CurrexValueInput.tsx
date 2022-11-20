@@ -16,7 +16,7 @@ interface CurrexValueInputProps {
   mode?: "Select" | "Input";
   defaultValue?: string;
   dataset?: Array<listOptions>;
-  value?: string ;
+  value?: string;
 
   onChangeValue?(value: string): string | void;
 }

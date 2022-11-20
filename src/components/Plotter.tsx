@@ -9,8 +9,7 @@ interface PlotterProps {
   dest?: string;
 }
 
- 
-function Plotter({ base,dest }: PlotterProps) {
+function Plotter({ base, dest }: PlotterProps) {
   let endDate = moment().format(SHORTDATE);
   let startDate = moment().subtract("12", "months").format(SHORTDATE);
   const [timeSeriesData, setTimeSeriesData] = useState<
@@ -21,7 +20,7 @@ function Plotter({ base,dest }: PlotterProps) {
 
   useEffect(() => {
     (async function run() {
-      let seriesData = await fetchTimeSeries(startDate, endDate,base,dest);
+      let seriesData = await fetchTimeSeries(startDate, endDate, base, dest);
       console.log(seriesData);
       let rateValues = Object.values(seriesData.rates);
       let dataMapping: Array<{ date: string; value: {} }> = [];
@@ -40,7 +39,7 @@ function Plotter({ base,dest }: PlotterProps) {
 
       setTimeSeriesData(dataMapping);
     })();
-  }, [base,dest]);
+  }, [base, dest]);
 
   return (
     <div className={"p-12"} style={{ backgroundColor: "#252d38" }}>

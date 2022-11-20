@@ -5,7 +5,7 @@ import { FaBars, FaTimes } from "react-icons/fa";
 export default function CurrExNavbar() {
   const [navbar, setNavbar] = useState(false);
   return (
-    <nav className="sticky top-0 w-full bg-slate-800 shadow z-50"  >
+    <nav className="sticky top-0 w-full bg-slate-800 shadow z-50">
       <div className=" justify-between px-4 mx-auto  container md:items-center md:flex md:px-8">
         <div>
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
@@ -22,10 +22,9 @@ export default function CurrExNavbar() {
                 onClick={() => setNavbar(!navbar)}
               >
                 {navbar ? (
-                    <FaTimes color={"white"} />
+                  <FaTimes color={"white"} />
                 ) : (
-                    <FaBars color={"white"} />
-
+                  <FaBars color={"white"} />
                 )}
               </button>
             </div>

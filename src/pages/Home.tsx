@@ -1,43 +1,39 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import CurrExNavbar from "../components/Navbar";
 import ConverterPanel from "../components/ConverterPanel";
-import {fetchLatestRates} from "../utils/api";
-import {notification} from "antd";
-import {sampleRatesResponse} from "../utils/contants";
+import { fetchLatestRates } from "../utils/api";
+import { notification } from "antd";
 import currencyContext from "../context/CurrencyContext";
 
 interface AppProps {}
 
 function Home(props: AppProps) {
-    const [currencies, setCurrencies] = useState<any>([]);
+  const [currencies, setCurrencies] = useState<any>([]);
 
+  const { baseCurrency, setBaseCurrency } = useContext(currencyContext);
 
-    const { baseCurrency,setBaseCurrency } = useContext(currencyContext);
+  useEffect(() => {
+    (async function () {
+      const response = await fetchLatestRates(baseCurrency);
 
-     useEffect(() => {
-        (async function (){
-          const response = await fetchLatestRates(baseCurrency);
+      if (response.success) {
+        setCurrencies(response.rates);
+      } else {
+        notification.error({
+          message: "An Error Occured",
+          description:
+            response?.message ||
+            "A server or processing error occured. We dont have additional details on this.",
+        });
+      }
+    })();
+  }, [baseCurrency]);
 
-            if(response.success){
-
-            setCurrencies(response.rates)
-            }else{
-                notification.error({
-                    message: 'An Error Occured',
-                    description:
-                       response?.message || "A server or processing error occured. We dont have additional details on this."
-                });
-
-            }
-
-        })()
-    }, [baseCurrency]);
- 
-    return (
+  return (
     <div>
       <CurrExNavbar />
 
-      <ConverterPanel currencies={currencies } currentRoute={'/'}/>
+      <ConverterPanel currencies={currencies} currentRoute={"/"} />
     </div>
   );
 }
